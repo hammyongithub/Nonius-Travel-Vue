@@ -15,7 +15,7 @@
         nav 
       >
         <template v-slot:append>
-         <v-btn
+        <v-btn
             variant="text"
             icon="mdi-chevron-left"
             @click.stop.prevent="rail = !rail"
@@ -47,18 +47,13 @@
         <v-icon>mdi-theme-light-dark</v-icon>
       </v-btn>
 
-      <template v-if="!isLoggedIn">
-        <v-btn color="primary" variant="text" to="/login">
-          Login
-        </v-btn>
-        <v-btn color="primary" variant="text" to="/register">
-          Register
-        </v-btn>
-      </template>
-
-      <v-btn v-else color="primary" variant="text" @click="logout">
+      <v-btn v-if="isLoggedIn !== null && isLoggedIn" color="primary" variant="text" @click="logout">
         Logout
       </v-btn>
+      <v-btn v-else color="primary" variant="text" to="/login">
+        Login
+      </v-btn>
+
     </v-toolbar>
   
     <v-main>
@@ -68,32 +63,45 @@
 </template>
 
 <script>
-  export default {
-    data () {
-      return {
-        drawer: true,
-        rail: true,
-        isLoggedIn: false,
-      }
-    },
-    methods: {
-      logout () {
-        this.isLoggedIn = false
-        this.$router.push('/login')
-      }
-    },
-    components: {
-      
+import { useStore } from './store.js';
+import { useTheme } from 'vuetify/lib/framework.mjs';
+import { computed } from 'vue';
+import router from './router'; // Import your router instance
+
+export default {
+  beforeRouteUpdate(to, from, next) {
+    // Trigger the setup function when the route is updated
+    this.setup();
+    next();
+  },
+
+  setup() {
+    const theme = useTheme();
+    function toggleTheme() {
+      theme.global.name.value = theme.global.current.value.dark ? 'light' : 'dark';
     }
-  }
-</script>
 
-<script setup>
-  import { useTheme } from 'vuetify/lib/framework.mjs';
+    const authStore = useStore();
+    const logout = () => {
+      authStore.logout();
+      router.push({ name: 'login' });
+    };
 
-  const theme=useTheme()
+    console.log(authStore.isLoggedIn);
 
-  function toggleTheme () {
-    theme.global.name.value = theme.global.current.value.dark ? 'light' : 'dark'
-  }
+    return {
+      isLoggedIn: computed(() => authStore.isLoggedIn), // Use computed to ensure reactivity
+      logout,
+      toggleTheme,
+      theme,
+    };
+  },
+
+  data() {
+    return {
+      drawer: true,
+      rail: true,
+    };
+  },
+};
 </script>
