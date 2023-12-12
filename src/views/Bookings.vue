@@ -117,9 +117,14 @@ export default {
   methods: {
     async searchHotelsAndOffers() {
       if (this.location) {
-      this.loading = true;
-      await Promise.all([this.searchHotels(), this.searchOffers()]);
-      this.loading = false;
+        this.loading = true; // Start loading
+        try {
+          await this.searchHotels(); // Wait for searchHotels to complete
+          await this.searchOffers(); // Then execute searchOffers
+        } catch (error) {
+          console.error('Error in hotel and offer search:', error);
+        }
+        this.loading = false; // End loading once both methods are completed
       }
     },
     async searchHotels() {
