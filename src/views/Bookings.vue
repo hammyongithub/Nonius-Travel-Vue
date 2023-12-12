@@ -63,8 +63,13 @@
           </v-col>
         </v-row>
 
+        <v-row v-if="loading">
+          <v-col class="text-center">
+            <v-progress-circular indeterminate color="primary"></v-progress-circular>
+          </v-col>
+        </v-row>
         <!-- Displaying hotel offers -->
-        <v-row>
+        <v-row v-else>
           <v-col cols="12" v-for="(offer, index) in hotelOffers.slice(0, 9)" :key="index">
             <hotel-card :offer="offer"></hotel-card>
           </v-col>
@@ -100,6 +105,7 @@ export default {
       currency: '',
       boardType: '',
       hotelOffers: [],
+      loading: false,
     }
   },
   computed: {
@@ -111,10 +117,13 @@ export default {
   methods: {
     async searchHotelsAndOffers() {
       if (this.location) {
+        this.loading = true; // Start loading
         await this.searchHotels();
         this.searchOffers();
-      }
-    },
+        this.loading = false; // End loading
+  }
+},
+
     async searchHotels() {
       const locationCode = this.location.substring(0, 3);
       const baseUrl = process.env.VUE_APP_API_BASE_URL;
