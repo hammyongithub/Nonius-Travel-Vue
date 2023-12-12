@@ -117,13 +117,11 @@ export default {
   methods: {
     async searchHotelsAndOffers() {
       if (this.location) {
-        this.loading = true; // Start loading
-        await this.searchHotels();
-        await this.searchOffers();
-        this.loading = false; // End loading
-  }
-},
-
+      this.loading = true;
+      await Promise.all([this.searchHotels(), this.searchOffers()]);
+      this.loading = false;
+      }
+    },
     async searchHotels() {
       const locationCode = this.location.substring(0, 3);
       const baseUrl = process.env.VUE_APP_API_BASE_URL;
