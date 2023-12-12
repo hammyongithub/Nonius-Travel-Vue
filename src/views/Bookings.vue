@@ -123,8 +123,9 @@ export default {
           await this.searchOffers(); // Then execute searchOffers
         } catch (error) {
           console.error('Error in hotel and offer search:', error);
+        } finally {
+          this.loading = false; // Stop loading
         }
-        this.loading = false; // End loading once both methods are completed
       }
     },
     async searchHotels() {
