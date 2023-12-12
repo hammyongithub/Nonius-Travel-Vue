@@ -119,7 +119,7 @@ export default {
       if (this.location) {
         this.loading = true; // Start loading
         await this.searchHotels();
-        this.searchOffers();
+        await this.searchOffers();
         this.loading = false; // End loading
   }
 },
